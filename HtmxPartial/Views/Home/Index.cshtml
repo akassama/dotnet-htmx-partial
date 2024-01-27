@@ -1,0 +1,63 @@
+﻿@model FormModel
+
+@{
+    ViewData["Title"] = "Sample HTMX Partial";
+}
+
+<div class="container-fluid">
+    <h3 class="text-dark mb-1">
+        Sample Form
+    </h3>
+    <div class="row mt-2">
+        @if(TempData["Message"] != null)
+        {
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                @TempData["Message"]
+            </div>
+        }
+        <div class="col-12">
+            <form asp-action="" asp-controller="home" method="post" id="sampleForm">
+                <div class="mb-3 mt-3">
+                    <label asp-for="FormInput" class="form-label"></label>
+                    <input type="text" class="form-control" asp-for="FormInput" required>
+                    <span asp-validation-for="FormInput" class="text-danger"></span>
+                </div>
+                <div class="mb-3 mt-3">
+                    <label asp-for="SelectInput" class="form-label"></label>
+                    <select class="form-select" asp-for="SelectInput" required
+                            hx-post="/htmx/get-selected-partial"
+                            hx-trigger="load, change delay:200ms"
+                            hx-target="#partial-div"
+                            hx-swap="innerHTML"
+                            hx-indicator="#loading-indicator"
+                            hx-headers="{'Content-Type': 'application/x-www-form-urlencoded'}">
+                        <option value="">Select option</option>
+                        <option value="One">Option One</option>
+                        <option value="Two">Option Two</option>
+                    </select>
+                    <span asp-validation-for="SelectInput" class="text-danger"></span>
+                </div>
+                <div class="row mb-3" id="partial-div">
+                </div>
+
+                <div id="loading-indicator" style="display: none;">
+                    Loading...
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        // Optional: Initialize jQuery Validation
+        $(document).ready(function () {
+            $("#sampleForm").validate({
+                errorClass: "text-danger",
+                errorElement: "span"
+            });
+        });
+    </script>
+}
